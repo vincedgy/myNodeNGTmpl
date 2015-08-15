@@ -1,0 +1,5 @@
+.git
+.sass-chache
+node_modules
+scr/api
+*.log

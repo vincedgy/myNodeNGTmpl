@@ -1,0 +1,42 @@
+{
+  "name": "valid",
+  "version": "1.0.0",
+  "description": "Simple app",
+  "main": "index.html",
+  "moduleType": [
+    "node"
+  ],
+  "authors": [
+    "VinceDgy"
+  ],
+  "license": "MIT",
+  "homepage": "index.html",
+  "dependencies": {
+    "angular": "~1.4.4",
+    "ui-router": "~0.2.15"
+  },
+  "color":true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "source",
+    "spec",
+    ".bowerrc",
+    ".gitignore",
+    ".jshintignore",
+    ".jshintrc",
+    "bower.json",
+    "gruntfile.js",
+    "package.json",
+    "README.md"
+  ],
+  "install": {
+    "path": {
+      "js": "src/_js/",
+      "css": "src/_css/"
+    }
+  }
+}
