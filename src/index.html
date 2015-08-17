@@ -4,6 +4,13 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="assets/css/styles.min.css" media="screen" title="no title" charset="utf-8">
     <title>{{appName}}</title>
+
+    <!-- Load Scripts -->
+    <script type="text/javascript" src="assets/api/angular.min.js"></script>
+    <script type="text/javascript" src="assets/api/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="assets/api/firebase.js"></script>
+    <script type="text/javascript" src="assets/js/main.min.js"></script>
+
   </head>
   <body ng-app="app">
   <div id="placeholder">Loading...</div>
@@ -14,11 +21,8 @@
       <input type="button" name="name" value="RAZ" ng-click='reset()'>
     </div>
     <div class="" ng-show="yourMessage">
-        You're typing : {{yourMessage}}
+        You're typing : {{yourMessage}} !
     </div>
   </div>
-  <!-- Load Scripts -->
-  <script type="text/javascript" src="assets/api/api.min.js"></script>
-  <script type="text/javascript" src="assets/js/main.min.js"></script>
   </body>
 </html>

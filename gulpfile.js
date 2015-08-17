@@ -18,15 +18,17 @@ var gulp = require('gulp'),
   minifyHTML = require('gulp-minify-html'),
   ngAnnotate = require('gulp-ng-annotate'),
   del = require('del'),
-  rename = require('gulp-rename');
+  rename = require('gulp-rename'),
+  gutil = require('gulp-util'),
+  stylish = require('jshint-stylish');
 
 // JSHint task
 gulp.task('lint', function() {
   gulp
-    .src(['src/js/*.js', '!src/bower_components/**/*.js'])
+    .src(['src/*.js', 'src/js/*.js', '!src/api/**/*.js'])
     .pipe(jshint())
     // You can look into pretty reporters as well, but that's another story
-    .pipe(jshint.reporter('default'))
+    .pipe(jshint.reporter(stylish))
     .pipe(notify({
       message: 'lint task complete'
     }));
@@ -34,13 +36,15 @@ gulp.task('lint', function() {
 
 // TypeScript task
 gulp.task('typescript', function() {
-  var tsResult = gulp.src(['src/**/*.ts', '!src/bower_components/**/*.ts'])
+  var tsResult = gulp.src(['src/**/*.ts', '!src/api/**/*.ts'])
     .pipe(typescript({
       noImplicitAny: true,
       out: 'compiled.js'
     }));
-  return tsResult.js.pipe(gulp.dest('src/compiled.js'))
-    .pipe(notify({
+  return tsResult.js.pipe(gulp.dest('src/js'))
+      .on('error', gutil.log)
+      .on('error', gutil.beep)
+      .pipe(notify({
       message: 'TypeScript task complete'
     }));
 });
@@ -80,10 +84,25 @@ gulp.task('styles', function() {
 });
 
 // Scripts
+gulp.task('ngAnnotate', function() {
+  return gulp.src(['src/*.js', 'src/js/*.js', 'src/js/**/*.js', '!src/api/**/*.js'])
+  .pipe(ngAnnotate())
+  .pipe(notify({
+    message: 'ngAnnotate task complete'
+  }));
+});
+
+// Scripts
 gulp.task('scripts', function() {
-  return gulp.src(['src/*.js', 'src/js/*.js', 'src/js/**/*.js', '!src/bower_components/**/*js'])
-    //.pipe(ngAnnotate)
-    .pipe(uglify())
+  return gulp.src(['src/*.js', 'src/js/*.js'])
+    .pipe(ngAnnotate())
+    .on('error', gutil.log)
+    .on('error', gutil.beep)
+    .pipe(uglify({
+      global_defs: {
+        DEBUG: false
+      }
+    }))
     .pipe(concat('main.js'))
     .pipe(rename({
       suffix: '.min'
@@ -94,14 +113,22 @@ gulp.task('scripts', function() {
     }));
 });
 
+// allscr task
+gulp.task('allscr', ['lint'], function() {
+  gulp.start('typescript', 'scripts', 'watch');
+});
+
 // build-api
 gulp.task('build-api', function() {
-  return gulp.src(['src/api/**/*.min.js', 'src/api/**/release/*.min.js', 'src/api/**/dist/*.min.js'])
-    .pipe(concat('api.js'))
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(gulp.dest('public/assets/api'))
+  return gulp.src([
+    'src/api/firebase/firebase.js',
+    'src/api/angular/*.min.js*',
+    'src/api/angular/*.css',
+    'src/api/**/*.min.js',
+    'src/api/**/release/*.min.js',
+    'src/api/**/dist/*.min.js'])
+    .pipe(rename({dirname: 'public/assets/api'}))
+    .pipe(gulp.dest('./'))
     .pipe(notify({
       message: 'build-api task complete'
     }));
@@ -109,7 +136,10 @@ gulp.task('build-api', function() {
 
 // build-api maps
 gulp.task('build-api-map', function() {
-  return gulp.src(['src/api/**/*.min.js.map', 'src/api/**/release/*.min.js.map', 'src/api/**/dist/*.min.js.map'])
+  return gulp.src([
+    'src/api/**/*.min.js.map',
+    'src/api/**/release/*.min.js.map',
+    'src/api/**/dist/*.min.js.map'])
     .pipe(rename({dirname: 'public/assets/api'}))
     .pipe(gulp.dest('./'))
     .pipe(notify({
@@ -149,9 +179,9 @@ gulp.task('watch', function() {
   // Watch .scss files
   gulp.watch('src/css/**/*.scss', ['styles']);
   // Watch .ts files
-  // gulp.watch(['src/js/**/*.ts','!src/bower_components/**/*.ts'], ['typescript']);
+  gulp.watch(['src/ts/**/*.ts'], ['typescript']);
   // Watch .js files
-  gulp.watch(['src/js/**/*.js', 'src/app.js', 'src/compiled.js'], ['lint', 'scripts']);
+  gulp.watch(['src/js/**/*.js', 'src/app.js', 'src/js/compiled.js'], ['lint', 'scripts']);
   // Watch image files
   gulp.watch('src/img/**/*', ['images']);
   // Watch index.html
@@ -159,7 +189,7 @@ gulp.task('watch', function() {
   // Create LiveReload server
   livereload.listen();
   // Watch any files in public/, reload on change and restart server
-  gulp.watch(['public/**/*', 'public/*']).on('change', livereload.changed)
+  gulp.watch(['public/assets/**/*', 'public/*']).on('change', livereload.changed)
 });
 
 // Default task

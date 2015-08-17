@@ -13,9 +13,10 @@
   "homepage": "index.html",
   "dependencies": {
     "angular": "~1.4.4",
-    "ui-router": "~0.2.15"
+    "ui-router": "~0.2.15",
+    "firebase": "~2.2.9"
   },
-  "color":true,
+  "color": true,
   "ignore": [
     "**/.*",
     "node_modules",
