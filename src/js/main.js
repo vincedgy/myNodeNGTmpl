@@ -1,7 +1,3 @@
-var Vehicule = (function () {
-    function Vehicule(model) {
-        this.model = model;
-        var var1 = 1;
-    }
-    return Vehicule;
-})();
+var A = 1;
+var B = 2;
+var C = 3;
